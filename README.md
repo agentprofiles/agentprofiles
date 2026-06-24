@@ -1,2 +1,2 @@
-# agentcards
-Private Agent Cards registry and artifacts.
+# agentprofiles
+Private Agent Profiles registry and artifacts.

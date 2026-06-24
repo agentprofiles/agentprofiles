@@ -1,7 +1,7 @@
 {
   "$schema": "https://mintlify.com/docs.json",
   "theme": "mint",
-  "name": "Agent Cards",
+  "name": "Agent Profiles",
   "colors": {
     "primary": "#3f3a36",
     "light": "#e8e0d7",
@@ -11,7 +11,7 @@
   "navbar": {
     "primary": {
       "type": "github",
-      "href": "https://github.com/agent-cards/agentcards"
+      "href": "https://github.com/agentprofiles/agentprofiles"
     }
   },
   "navigation": {
