@@ -23,7 +23,7 @@ HTTP request details, cache controls, and server tuning.
 apiVersion: agentprofiles.io/v1
 kind: AgentProfile
 metadata:
-  namespace: pi
+  namespace: openclaw
   name: qwen3-6-35b-a3b-profile-v1
 spec:
   common:
@@ -45,8 +45,8 @@ The profile tells the harness how to run the agent with that model.
 
 Profiles can describe shared behavior that many harnesses may understand, and
 they can also include domain-named sections for harness-specific behavior. For
-example, `spec.common` can hold portable fields, while `spec.pi.dev` can hold
-Pi-owned settings.
+example, `spec.common` can hold portable fields, while `spec.openclaw.ai` can
+hold OpenClaw-owned settings.
 
 ## Why Agent Profiles?
 
@@ -77,7 +77,7 @@ The runtime flow is explicit:
 ## Profile shape
 
 All behavior fields live under `spec`. The `common` section is the
-harness-agnostic part. Domain-named sections such as `pi.dev` are owned by
+harness-agnostic part. Domain-named sections such as `openclaw.ai` are owned by
 the corresponding harness or project and can grow independently without
 changing the common schema.
 
