@@ -13,7 +13,7 @@ Agent Profiles are an open, versioned format for defining how an AI agent
 harness should run with a resolved model.
 
 They let a harness choose the right runtime profile for a model: which tools to
-expose, which system prompt to load, how to handle reasoning, and which
+expose, which system prompt to load, which thinking level to use, and which
 harness-specific settings to apply.
 
 The profile is tied to the model, but it stays separate from provider auth,
@@ -31,7 +31,7 @@ spec:
     systemPrompt:
       file:
         path: ./prompts/qwen3-6-35b-a3b.md
-    reasoningMode: inherit
+    thinkingLevel: high
 ```
 
 After a user chooses a model, the harness resolves which model it is going to
@@ -82,8 +82,11 @@ the corresponding harness or project and can grow independently without
 changing the common schema.
 
 The phase-one common fields are `toolExposure`, `systemPrompt`, and
-`reasoningMode`. Projects can add their own fields under their own
+`thinkingLevel`. Projects can add their own fields under their own
 domain-named section.
+
+`thinkingLevel` uses the portable Pi level set: `off`, `minimal`, `low`,
+`medium`, `high`, and `xhigh`.
 
 `systemPrompt` can either contain inline text or point at a prompt file in the
 same profile pack:
