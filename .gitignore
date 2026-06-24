@@ -18,3 +18,13 @@ node_modules/
 **/.venv/
 **/__pycache__/
 *.pyc
+
+# Generated binary assets
+*.bmp
+*.gif
+*.ico
+*.jpeg
+*.jpg
+*.png
+*.tiff
+*.webp
