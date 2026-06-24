@@ -1,8 +1,11 @@
 ---
-title: "Agent Profiles"
-sidebarTitle: "Overview"
-description: "Portable profiles for running AI agents with specific models."
+title: Agent Profiles Overview
+description: Portable profiles for running AI agents with specific models.
 ---
+
+# Agent Profiles Overview
+
+Portable profiles for running AI agents with specific models.
 
 ## What are Agent Profiles?
 
@@ -121,19 +124,13 @@ future consumers.
 
 ## Get started
 
-<CardGroup cols={2}>
-  <Card
-    title="RFC discussion"
-    icon="comments"
-    href="https://github.com/openclaw/rfcs/pull/18"
-  >
-    Track the active design discussion and proposed implementation phases.
-  </Card>
-  <Card
-    title="Repository"
-    icon="code"
-    href="https://github.com/agentprofiles/agentprofiles"
-  >
-    Follow the docs, packages, and future reference artifacts.
-  </Card>
-</CardGroup>
+<div class="link-grid">
+  <a class="profile-card" href="https://github.com/openclaw/rfcs/pull/18">
+    <strong>RFC discussion</strong>
+    <span>Track the active design discussion and proposed implementation phases.</span>
+  </a>
+  <a class="profile-card" href="https://github.com/agentprofiles/agentprofiles">
+    <strong>Repository</strong>
+    <span>Follow the docs, packages, and future reference artifacts.</span>
+  </a>
+</div>
