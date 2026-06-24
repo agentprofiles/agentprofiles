@@ -3,9 +3,17 @@
   "theme": "mint",
   "name": "Agent Cards",
   "colors": {
-    "primary": "#7f7f7f",
-    "light": "#bfbfbf",
-    "dark": "#404040"
+    "primary": "#3f3a36",
+    "light": "#e8e0d7",
+    "dark": "#24211f"
+  },
+  "logo": {
+    "light": "/logo/agent-cards-mark-light.svg",
+    "dark": "/logo/agent-cards-mark-dark.svg"
+  },
+  "favicon": {
+    "light": "/logo/agent-cards-mark-light.svg",
+    "dark": "/logo/agent-cards-mark-dark.svg"
   },
   "navbar": {
     "primary": {
@@ -31,4 +39,3 @@
     ]
   }
 }
-
