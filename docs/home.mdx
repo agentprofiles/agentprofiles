@@ -29,9 +29,14 @@ spec:
     reasoningMode: inherit
 ```
 
-An Agent Profile is selected after a harness has already resolved the model it
-is going to use. The profile answers a narrow question: what agent behavior
-should the harness apply for this model?
+After a user chooses a model, the harness resolves which model it is going to
+run and then finds the best available Agent Profile for it.
+
+That profile may come with the model, be built into the harness, or be found in
+an Agent Profile registry. The format does not require one specific discovery or
+download mechanism.
+
+The profile tells the harness how to run the agent with that model.
 
 Profiles can describe shared behavior that many harnesses may understand, and
 they can also include domain-named sections for harness-specific behavior. For
