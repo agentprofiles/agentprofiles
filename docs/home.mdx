@@ -1,5 +1,135 @@
 ---
 title: "Agent Profiles"
 sidebarTitle: "Overview"
-description: "Agent Profiles documentation."
+description: "Portable behavior profiles for AI agent harnesses."
 ---
+
+## What are Agent Profiles?
+
+Agent Profiles are a lightweight, open format for describing how an AI agent
+harness should behave with a resolved model.
+
+They let a harness apply versioned behavior such as tool exposure, prompt
+presets, reasoning defaults, and project-specific settings without mixing that
+behavior into model identity, provider auth, HTTP payloads, cache controls, or
+server tuning.
+
+```yaml
+apiVersion: agentprofiles.org/v1
+kind: AgentProfile
+metadata:
+  namespace: openclaw
+  name: anthropic-profile-v1
+spec:
+  common:
+    toolExposure: standard-v1
+    promptPreset: standard-v1
+    reasoningMode: inherit
+  openclaw.ai:
+    toolSearchPolicy: inherit
+    contextPosture: standard
+```
+
+An Agent Profile is selected after a harness has already resolved the model it
+is going to use. The profile answers a narrow question: what agent behavior
+should the harness apply for this model?
+
+Profiles can describe shared behavior that many harnesses may understand, and
+they can also include domain-named sections for harness-specific behavior. For
+example, `spec.common` can hold portable fields, while `spec.openclaw.ai` can
+hold OpenClaw-owned settings.
+
+## Why Agent Profiles?
+
+Model behavior is increasingly model-family-specific, provider-specific, and
+deployment-specific. Keeping those decisions in scattered code paths makes them
+hard to review, test, distribute, and explain.
+
+Agent Profiles give teams a small artifact that is:
+
+- **Portable**: the same profile shape can be used across compatible harnesses.
+- **Versioned**: behavior changes can be reviewed, pinned, and rolled back.
+- **Layerable**: a base profile can be reused and overridden for a model
+  family, exact model, enterprise deployment, or unreleased model.
+- **Inspectable**: operators can see which profile was selected and why.
+- **Local at runtime**: installed profiles are resolved and validated before
+  use, not fetched during a model request.
+
+## How do Agent Profiles work?
+
+The runtime flow is intentionally small:
+
+1. Resolve model identity and trusted metadata.
+2. Select an Agent Profile through explicit config or registry bindings.
+3. Hydrate overlays and validate the materialized profile.
+4. Apply the profile's harness behavior.
+5. Let the model driver enforce provider capabilities and request shape.
+
+## Profile shape
+
+All behavior fields live under `spec`. The `common` section is the
+harness-agnostic part. Domain-named sections such as `openclaw.ai` are owned by
+the corresponding harness or project and can grow independently without
+changing the common schema.
+
+The phase-one common fields are `toolExposure`, `promptPreset`, and
+`reasoningMode`. The OpenClaw-owned fields are `toolSearchPolicy` and
+`contextPosture`.
+
+Profiles can be authored with Kustomize-style bases and overlays. The runtime
+uses the validated materialized output, not a mutable authoring graph.
+
+```yaml
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+resources:
+  - ../anthropic-profile-v1
+patches:
+  - target:
+      group: agentprofiles.org
+      version: v1
+      kind: AgentProfile
+      name: anthropic-profile-v1
+    patch: |-
+      - op: replace
+        path: /metadata/name
+        value: claude-opus-profile-v1
+      - op: replace
+        path: /spec/common/reasoningMode
+        value: off
+```
+
+## What profiles do not do
+
+Agent Profiles do not replace model selection or provider drivers. They do not
+carry credentials, raw prompt bodies, arbitrary tool allow or deny lists,
+endpoint data, transport headers, provider request fragments, server launch
+arguments, cache controls, or generic `extra` maps.
+
+Those concerns stay with the systems that already own them: model identity,
+drivers, prompt source, secret storage, and serving presets.
+
+## Open development
+
+Agent Profiles are being shaped in public. The current work is focused on the
+core resource model, OpenClaw's built-in profiles, and TypeScript and Python
+packages for future consumers.
+
+## Get started
+
+<CardGroup cols={2}>
+  <Card
+    title="RFC discussion"
+    icon="comments"
+    href="https://github.com/openclaw/rfcs/pull/18"
+  >
+    Track the active design discussion and proposed implementation phases.
+  </Card>
+  <Card
+    title="Repository"
+    icon="code"
+    href="https://github.com/agentprofiles/agentprofiles"
+  >
+    Follow the docs, packages, and future reference artifacts.
+  </Card>
+</CardGroup>
