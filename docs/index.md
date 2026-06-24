@@ -1,11 +1,11 @@
 ---
 title: Agent Profiles Overview
-description: Portable profiles for running AI agents with specific models.
+description: An open and portable format for customizing agent harnesses for specific AI models.
 ---
 
 # Agent Profiles Overview
 
-Portable profiles for running AI agents with specific models.
+An open and portable format for customizing agent harnesses for specific AI models.
 
 ## What are Agent Profiles?
 
