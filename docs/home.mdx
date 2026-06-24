@@ -6,8 +6,8 @@ description: "Portable profiles for running AI agents with specific models."
 
 ## What are Agent Profiles?
 
-Agent Profiles are a lightweight, open format for describing how an AI agent
-harness should behave with a resolved model.
+Agent Profiles are an open, versioned format for defining how an AI agent
+harness should run with a resolved model.
 
 They let a harness apply versioned behavior such as tool exposure, prompt
 presets, reasoning defaults, and project-specific settings without mixing that
@@ -45,7 +45,7 @@ Model behavior is increasingly model-family-specific, provider-specific, and
 deployment-specific. Keeping those decisions in scattered code paths makes them
 hard to review, test, distribute, and explain.
 
-Agent Profiles give teams a small artifact that is:
+Agent Profiles give teams a concrete artifact that is:
 
 - **Portable**: the same profile shape can be used across compatible harnesses.
 - **Versioned**: behavior changes can be reviewed, pinned, and rolled back.
@@ -57,7 +57,7 @@ Agent Profiles give teams a small artifact that is:
 
 ## How do Agent Profiles work?
 
-The runtime flow is intentionally small:
+The runtime flow is explicit:
 
 1. Resolve model identity and trusted metadata.
 2. Select an Agent Profile through explicit config or registry bindings.
