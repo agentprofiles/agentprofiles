@@ -18,16 +18,13 @@ server tuning.
 apiVersion: agentprofiles.io/v1
 kind: AgentProfile
 metadata:
-  namespace: openclaw
-  name: anthropic-profile-v1
+  namespace: pi
+  name: qwen3-6-35b-a3b-profile-v1
 spec:
   common:
     toolExposure: standard-v1
     promptPreset: standard-v1
     reasoningMode: inherit
-  openclaw.ai:
-    toolSearchPolicy: inherit
-    contextPosture: standard
 ```
 
 An Agent Profile is selected after a harness has already resolved the model it
@@ -36,8 +33,8 @@ should the harness apply for this model?
 
 Profiles can describe shared behavior that many harnesses may understand, and
 they can also include domain-named sections for harness-specific behavior. For
-example, `spec.common` can hold portable fields, while `spec.openclaw.ai` can
-hold OpenClaw-owned settings.
+example, `spec.common` can hold portable fields, while `spec.pi.ai` can hold
+Pi-owned settings.
 
 ## Why Agent Profiles?
 
@@ -68,13 +65,13 @@ The runtime flow is explicit:
 ## Profile shape
 
 All behavior fields live under `spec`. The `common` section is the
-harness-agnostic part. Domain-named sections such as `openclaw.ai` are owned by
+harness-agnostic part. Domain-named sections such as `pi.ai` are owned by
 the corresponding harness or project and can grow independently without
 changing the common schema.
 
 The phase-one common fields are `toolExposure`, `promptPreset`, and
-`reasoningMode`. The OpenClaw-owned fields are `toolSearchPolicy` and
-`contextPosture`.
+`reasoningMode`. Projects can add their own fields under their own
+domain-named section.
 
 Profiles can be authored with Kustomize-style bases and overlays. The runtime
 uses the validated materialized output, not a mutable authoring graph.
@@ -83,20 +80,20 @@ uses the validated materialized output, not a mutable authoring graph.
 apiVersion: kustomize.config.k8s.io/v1beta1
 kind: Kustomization
 resources:
-  - ../anthropic-profile-v1
+  - ../pi-base-profile-v1
 patches:
   - target:
       group: agentprofiles.io
       version: v1
       kind: AgentProfile
-      name: anthropic-profile-v1
+      name: pi-base-profile-v1
     patch: |-
       - op: replace
         path: /metadata/name
-        value: claude-opus-profile-v1
+        value: qwen3-6-35b-a3b-profile-v1
       - op: replace
         path: /spec/common/reasoningMode
-        value: off
+        value: adaptive
 ```
 
 ## What profiles do not do
@@ -112,8 +109,8 @@ drivers, prompt source, secret storage, and serving presets.
 ## Open development
 
 Agent Profiles are being shaped in public. The current work is focused on the
-core resource model, OpenClaw's built-in profiles, and TypeScript and Python
-packages for future consumers.
+core resource model, reference profiles, and TypeScript and Python packages for
+future consumers.
 
 ## Get started
 
