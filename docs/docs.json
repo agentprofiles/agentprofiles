@@ -1,0 +1,34 @@
+{
+  "$schema": "https://mintlify.com/docs.json",
+  "theme": "mint",
+  "name": "Agent Cards",
+  "colors": {
+    "primary": "#7f7f7f",
+    "light": "#bfbfbf",
+    "dark": "#404040"
+  },
+  "navbar": {
+    "primary": {
+      "type": "github",
+      "href": "https://github.com/agent-cards/agentcards"
+    }
+  },
+  "navigation": {
+    "pages": [
+      "home"
+    ]
+  },
+  "contextual": {
+    "options": [
+      "copy",
+      "view",
+      "chatgpt",
+      "claude",
+      "perplexity",
+      "mcp",
+      "cursor",
+      "vscode"
+    ]
+  }
+}
+

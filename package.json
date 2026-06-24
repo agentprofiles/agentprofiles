@@ -1,0 +1,8 @@
+{
+  "name": "agentcards",
+  "private": true,
+  "scripts": {
+    "dev": "cd docs && npx mint dev"
+  }
+}
+
