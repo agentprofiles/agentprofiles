@@ -1,0 +1,13 @@
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[project]
+name = "agentprofiles"
+version = "0.0.0"
+description = "Python package for Agent Profiles."
+readme = "README.md"
+requires-python = ">=3.9"
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/agentprofiles"]
