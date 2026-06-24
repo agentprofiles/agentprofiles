@@ -70,7 +70,7 @@ The runtime flow is explicit:
 
 1. Resolve model identity and trusted metadata.
 2. Select an Agent Profile through explicit config or registry bindings.
-3. Hydrate overlays and validate the materialized profile.
+3. Load the profile folder and validate the resolved profile.
 4. Apply the profile's harness behavior.
 5. Let the model driver enforce provider capabilities and request shape.
 
@@ -100,27 +100,15 @@ systemPrompt:
     path: ./prompts/qwen3-6-35b-a3b.md
 ```
 
-Profiles can be authored with Kustomize-style bases and overlays. The runtime
-uses the validated materialized output, not a mutable authoring graph.
+A profile pack is a folder with a required `profile.yaml` file. Any files
+referenced by the profile must stay inside that folder.
 
-```yaml
-apiVersion: kustomize.config.k8s.io/v1beta1
-kind: Kustomization
-resources:
-  - ../pi-base-profile-v1
-patches:
-  - target:
-      group: agentprofiles.io
-      version: v1
-      kind: AgentProfile
-      name: pi-base-profile-v1
-    patch: |-
-      - op: replace
-        path: /metadata/name
-        value: qwen3-6-35b-a3b-profile-v1
-      - op: replace
-        path: /spec/common/reasoningMode
-        value: adaptive
+```text
+qwen3-6-35b-a3b-profile-v1/
+├── profile.yaml
+├── prompts/
+│   └── system.md
+└── README.md
 ```
 
 ## What profiles do not do
