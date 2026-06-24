@@ -9,10 +9,12 @@ description: "Portable profiles for running AI agents with specific models."
 Agent Profiles are an open, versioned format for defining how an AI agent
 harness should run with a resolved model.
 
-They let a harness apply versioned behavior such as tool exposure, prompt
-presets, reasoning defaults, and project-specific settings without mixing that
-behavior into model identity, provider auth, HTTP payloads, cache controls, or
-server tuning.
+They let a harness choose the right runtime profile for a model: which tools to
+expose, which prompt preset to use, how to handle reasoning, and which
+harness-specific settings to apply.
+
+The profile is tied to the model, but it stays separate from provider auth,
+HTTP request details, cache controls, and server tuning.
 
 ```yaml
 apiVersion: agentprofiles.io/v1
