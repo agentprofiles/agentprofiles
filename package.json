@@ -4,7 +4,8 @@
   "scripts": {
     "dev": "vitepress dev docs",
     "build": "vitepress build docs",
-    "preview": "vitepress preview docs"
+    "preview": "vitepress preview docs",
+    "deploy": "npm run build && npx wrangler pages deploy"
   },
   "devDependencies": {
     "vitepress": "^1.6.4"
