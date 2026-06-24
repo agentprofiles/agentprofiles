@@ -7,14 +7,7 @@
     "light": "#e8e0d7",
     "dark": "#24211f"
   },
-  "logo": {
-    "light": "/logo/agent-cards-logo-light.svg",
-    "dark": "/logo/agent-cards-logo-dark.svg"
-  },
-  "favicon": {
-    "light": "/logo/agent-cards-mark-light.svg",
-    "dark": "/logo/agent-cards-mark-dark.svg"
-  },
+  "favicon": "/favicon.svg",
   "navbar": {
     "primary": {
       "type": "github",
