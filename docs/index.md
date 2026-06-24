@@ -13,7 +13,7 @@ Agent Profiles are an open, versioned format for defining how an AI agent
 harness should run with a resolved model.
 
 They let a harness choose the right runtime profile for a model: which tools to
-expose, which prompt preset to use, how to handle reasoning, and which
+expose, which system prompt to load, how to handle reasoning, and which
 harness-specific settings to apply.
 
 The profile is tied to the model, but it stays separate from provider auth,
@@ -28,7 +28,9 @@ metadata:
 spec:
   common:
     toolExposure: standard-v1
-    promptPreset: standard-v1
+    systemPrompt:
+      file:
+        path: ./prompts/qwen3-6-35b-a3b.md
     reasoningMode: inherit
 ```
 
@@ -43,7 +45,7 @@ The profile tells the harness how to run the agent with that model.
 
 Profiles can describe shared behavior that many harnesses may understand, and
 they can also include domain-named sections for harness-specific behavior. For
-example, `spec.common` can hold portable fields, while `spec.pi.ai` can hold
+example, `spec.common` can hold portable fields, while `spec.pi.dev` can hold
 Pi-owned settings.
 
 ## Why Agent Profiles?
@@ -75,13 +77,28 @@ The runtime flow is explicit:
 ## Profile shape
 
 All behavior fields live under `spec`. The `common` section is the
-harness-agnostic part. Domain-named sections such as `pi.ai` are owned by
+harness-agnostic part. Domain-named sections such as `pi.dev` are owned by
 the corresponding harness or project and can grow independently without
 changing the common schema.
 
-The phase-one common fields are `toolExposure`, `promptPreset`, and
+The phase-one common fields are `toolExposure`, `systemPrompt`, and
 `reasoningMode`. Projects can add their own fields under their own
 domain-named section.
+
+`systemPrompt` can either contain inline text or point at a prompt file in the
+same profile pack:
+
+```yaml
+systemPrompt:
+  text: |
+    You are a coding agent.
+```
+
+```yaml
+systemPrompt:
+  file:
+    path: ./prompts/qwen3-6-35b-a3b.md
+```
 
 Profiles can be authored with Kustomize-style bases and overlays. The runtime
 uses the validated materialized output, not a mutable authoring graph.
@@ -109,12 +126,12 @@ patches:
 ## What profiles do not do
 
 Agent Profiles do not replace model selection or provider drivers. They do not
-carry credentials, raw prompt bodies, arbitrary tool allow or deny lists,
-endpoint data, transport headers, provider request fragments, server launch
-arguments, cache controls, or generic `extra` maps.
+carry credentials, arbitrary tool allow or deny lists, endpoint data, transport
+headers, provider request fragments, server launch arguments, cache controls, or
+generic `extra` maps.
 
 Those concerns stay with the systems that already own them: model identity,
-drivers, prompt source, secret storage, and serving presets.
+drivers, secret storage, and serving presets.
 
 ## Open development
 
