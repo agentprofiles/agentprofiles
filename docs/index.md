@@ -24,12 +24,12 @@ apiVersion: agentprofiles.io/v1
 kind: AgentProfile
 metadata:
   namespace: openclaw
-  name: qwen3-6-35b-a3b-profile-v1
+  name: acme-1-30b
 spec:
   common:
     systemPrompt:
       file:
-        path: ./prompts/qwen3-6-35b-a3b.md
+        path: ./prompts/acme-1-30b.md
     thinkingLevel: high
   openclaw.ai:
     toolProfile: lean
@@ -101,14 +101,14 @@ systemPrompt:
 ```yaml
 systemPrompt:
   file:
-    path: ./prompts/qwen3-6-35b-a3b.md
+    path: ./prompts/acme-1-30b.md
 ```
 
 A profile pack is a folder with a required `profile.yaml` file. Any files
 referenced by the profile must stay inside that folder.
 
 ```text
-qwen3-6-35b-a3b-profile-v1/
+acme-1-30b/
 ├── profile.yaml
 ├── prompts/
 │   └── system.md

@@ -18,7 +18,7 @@ An Agent Profile pack is a folder with one required `profile.yaml` file.
 Referenced files must stay inside the same folder.
 
 ```text
-qwen3-6-35b-a3b-profile-v1/
+acme-1-30b/
 ├── profile.yaml
 ├── prompts/
 │   └── system.md
@@ -38,7 +38,7 @@ apiVersion: agentprofiles.io/v1
 kind: AgentProfile
 metadata:
   namespace: openclaw
-  name: qwen3-6-35b-a3b-profile-v1
+  name: acme-1-30b
 spec:
   common:
     systemPrompt:
@@ -54,7 +54,7 @@ apiVersion: agentprofiles.io/v1
 kind: AgentProfile
 metadata:
   namespace: openclaw
-  name: qwen3-6-35b-a3b-lean-profile-v1
+  name: acme-1-30b-lean
 extends: openclaw/full-profile-v1
 spec:
   common:
@@ -103,7 +103,7 @@ YAML features are not part of the format.
 ```yaml
 metadata:
   namespace: openclaw
-  name: qwen3-6-35b-a3b-profile-v1
+  name: acme-1-30b
 ```
 
 | Field | Required | Type | Meaning |
