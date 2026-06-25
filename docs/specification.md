@@ -47,24 +47,20 @@ spec:
     thinkingLevel: high
 ```
 
-## Full Example
+## OpenClaw Base Example
 
 ```yaml
 apiVersion: agentprofiles.io/v1
 kind: AgentProfile
 metadata:
   namespace: openclaw
-  name: acme-1-30b-lean
-extends: openclaw/full-profile-v1
+  name: base
 spec:
   common:
     systemPrompt:
       file:
         path: ./prompts/system.md
     thinkingLevel: high
-  openclaw.ai:
-    toolProfile: lean
-    contextPosture: constrained
 ```
 
 ## Object Model
@@ -122,7 +118,7 @@ in profile identity.
 `extends` names a parent profile.
 
 ```yaml
-extends: openclaw/full-profile-v1
+extends: openclaw/base
 ```
 
 The value must be a profile id. A loader resolves the parent before runtime
