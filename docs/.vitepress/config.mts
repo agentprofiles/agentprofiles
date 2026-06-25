@@ -15,6 +15,10 @@ export default defineConfig({
     },
     nav: [
       {
+        text: 'Specification',
+        link: '/specification'
+      },
+      {
         text: 'agentprofiles/agentprofiles',
         link: 'https://github.com/agentprofiles/agentprofiles'
       }
@@ -23,6 +27,10 @@ export default defineConfig({
       {
         text: 'Overview',
         link: '/'
+      },
+      {
+        text: 'Specification',
+        link: '/specification'
       }
     ],
     outline: {

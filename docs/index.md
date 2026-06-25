@@ -134,6 +134,10 @@ future consumers.
 ## Get started
 
 <div class="link-grid">
+  <a class="profile-card" href="/specification">
+    <strong>Specification</strong>
+    <span>Read the v1 profile pack and resource format.</span>
+  </a>
   <a class="profile-card" href="https://github.com/openclaw/rfcs/pull/18">
     <strong>RFC discussion</strong>
     <span>Track the active design discussion and proposed implementation phases.</span>
