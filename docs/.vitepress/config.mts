@@ -3,7 +3,7 @@ import { defineConfig } from 'vitepress'
 export default defineConfig({
   title: 'Agent Profiles',
   description: 'Portable profiles for running AI agents with specific models.',
-  appearance: 'dark',
+  appearance: true,
   cleanUrls: true,
   head: [
     ['link', { rel: 'icon', href: '/favicon.svg', type: 'image/svg+xml' }],

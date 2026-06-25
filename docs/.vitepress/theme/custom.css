@@ -1,4 +1,27 @@
 :root {
+  color-scheme: light;
+  --vp-c-brand-1: #6f5a45;
+  --vp-c-brand-2: #8a7057;
+  --vp-c-brand-3: #cdb8a4;
+  --vp-c-bg: #fbfaf8;
+  --vp-c-bg-alt: #f3f0ec;
+  --vp-c-bg-elv: #ffffff;
+  --vp-c-bg-soft: #f6f2ed;
+  --vp-c-divider: #e4ddd5;
+  --vp-c-border: #d7cec5;
+  --vp-c-text-1: #25211e;
+  --vp-c-text-2: #5c554e;
+  --vp-c-text-3: #7d746c;
+  --ap-navbar-bg: rgba(251, 250, 248, 0.92);
+  --ap-code-bg: #f7f3ef;
+  --ap-card-bg: #fffdfb;
+  --ap-card-bg-hover: #f7f1eb;
+  --ap-card-border-hover: rgba(111, 90, 69, 0.45);
+  --vp-font-family-base: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  --vp-font-family-mono: "SFMono-Regular", ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", monospace;
+}
+
+.dark {
   --vp-c-brand-1: #d8c6b2;
   --vp-c-brand-2: #bda895;
   --vp-c-brand-3: #3f3a36;
@@ -11,11 +34,11 @@
   --vp-c-text-1: #f2f0ed;
   --vp-c-text-2: #b3afaa;
   --vp-c-text-3: #8f8a84;
-  --vp-font-family-base: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-  --vp-font-family-mono: "SFMono-Regular", ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", monospace;
-}
-
-html {
+  --ap-navbar-bg: rgba(13, 13, 15, 0.92);
+  --ap-code-bg: #0b0c0e;
+  --ap-card-bg: #151413;
+  --ap-card-bg-hover: #1a1817;
+  --ap-card-border-hover: rgba(216, 198, 178, 0.5);
   color-scheme: dark;
 }
 
@@ -25,7 +48,7 @@ body {
 }
 
 .VPNavBar {
-  background: rgba(13, 13, 15, 0.92);
+  background: var(--ap-navbar-bg);
 }
 
 .VPNavBarTitle .title {
@@ -39,7 +62,7 @@ body {
 
 .vp-doc div[class*="language-"] {
   border: 1px solid var(--vp-c-border);
-  background: #0b0c0e;
+  background: var(--ap-code-bg);
 }
 
 .link-grid {
@@ -55,14 +78,14 @@ body {
   border: 1px solid var(--vp-c-border);
   border-radius: 8px;
   padding: 18px;
-  background: #151413;
+  background: var(--ap-card-bg);
   text-decoration: none;
   transition: border-color 160ms ease, background 160ms ease, transform 160ms ease;
 }
 
 .profile-card:hover {
-  border-color: rgba(216, 198, 178, 0.5);
-  background: #1a1817;
+  border-color: var(--ap-card-border-hover);
+  background: var(--ap-card-bg-hover);
   transform: translateY(-1px);
 }
 
