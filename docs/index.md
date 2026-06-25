@@ -27,11 +27,12 @@ metadata:
   name: qwen3-6-35b-a3b-profile-v1
 spec:
   common:
-    toolExposure: standard-v1
     systemPrompt:
       file:
         path: ./prompts/qwen3-6-35b-a3b.md
     thinkingLevel: high
+  openclaw.ai:
+    toolProfile: lean
 ```
 
 After a user chooses a model, the harness resolves which model it is going to
@@ -81,9 +82,9 @@ harness-agnostic part. Domain-named sections such as `openclaw.ai` are owned by
 the corresponding harness or project and can grow independently without
 changing the common schema.
 
-The phase-one common fields are `toolExposure`, `systemPrompt`, and
-`thinkingLevel`. Projects can add their own fields under their own
-domain-named section.
+The phase-one common fields are `systemPrompt` and `thinkingLevel`. Projects
+can add their own fields under their own domain-named section. For example,
+OpenClaw can use `spec.openclaw.ai.toolProfile` for its own tool behavior.
 
 `thinkingLevel` uses the portable Pi level set: `off`, `minimal`, `low`,
 `medium`, `high`, and `xhigh`.
