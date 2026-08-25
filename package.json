@@ -1,13 +1,68 @@
 {
   "name": "agentprofiles",
+  "version": "0.0.0",
+  "description": "Reference TypeScript parser and validator for Agent Profiles.",
   "private": true,
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/agentprofiles/agentprofiles.git"
+  },
+  "homepage": "https://agentprofiles.io",
+  "bugs": {
+    "url": "https://github.com/agentprofiles/agentprofiles/issues"
+  },
+  "engines": {
+    "node": ">=20"
+  },
+  "sideEffects": false,
+  "type": "module",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
+    }
+  },
+  "files": [
+    "dist",
+    "schemas"
+  ],
   "scripts": {
+    "build": "npm run build:library && npm run build:docs",
+    "build:docs": "vitepress build docs",
+    "build:library": "tsup src/index.ts --format esm --dts --clean",
+    "check": "npm run format && npm run lint && npm run typecheck && npm run test:coverage && npm run dry && npm run mutate && npm run build",
     "dev": "vitepress dev docs",
-    "build": "vitepress build docs",
+    "dry": "slophammer-ts dry .",
+    "format": "prettier --check AGENTS.md README.md \"docs/*.md\" fixtures schemas src tests *.json *.mjs *.ts *.yml",
+    "format:write": "prettier --write AGENTS.md README.md \"docs/*.md\" fixtures schemas src tests *.json *.mjs *.ts *.yml",
+    "lint": "eslint src tests --max-warnings 0",
+    "mutate": "stryker run",
     "preview": "vitepress preview docs",
-    "deploy": "npm run build && npx wrangler pages deploy"
+    "slophammer": "slophammer-ts check . --format json",
+    "test": "vitest run",
+    "test:coverage": "vitest run --coverage",
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "ajv": "^8.17.1",
+    "yaml": "^2.8.1"
   },
   "devDependencies": {
-    "vitepress": "^1.6.4"
+    "@eslint/js": "^9.35.0",
+    "@stryker-mutator/core": "^10.0.0",
+    "@stryker-mutator/vitest-runner": "^10.0.0",
+    "@types/node": "^22.18.0",
+    "@vitest/coverage-v8": "^3.2.4",
+    "eslint": "^9.35.0",
+    "prettier": "^3.6.2",
+    "slophammer-ts": "0.5.0",
+    "tsup": "^8.5.0",
+    "typescript": "^5.9.2",
+    "typescript-eslint": "^8.42.0",
+    "vitepress": "^1.6.4",
+    "vitest": "^3.2.4"
   }
 }

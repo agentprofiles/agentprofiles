@@ -1,0 +1,10 @@
+apiVersion: agentprofiles.io/v1
+kind: AgentProfile
+metadata:
+  namespace: openclaw
+  name: small
+extends: openclaw/base
+spec:
+  common: {}
+  openclaw.ai:
+    toolProfile: lean

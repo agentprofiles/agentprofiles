@@ -1,0 +1,11 @@
+apiVersion: agentprofiles.io/v1
+kind: AgentProfile
+metadata:
+  namespace: openclaw
+  name: base
+spec:
+  common:
+    systemPrompt:
+      file:
+        path: ./prompts/system.md
+    thinkingLevel: high

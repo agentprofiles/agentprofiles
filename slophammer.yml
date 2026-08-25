@@ -1,0 +1,31 @@
+typescript:
+  coverage:
+    threshold: 85
+    paths:
+      - src
+    exclude:
+      - pattern: docs/.vitepress/**
+        reason:
+          VitePress site configuration and theme files are documentation
+          infrastructure.
+  complexity:
+    max: 8
+  dry:
+    max_findings: 0
+    paths:
+      - src
+    exclude:
+      - "**/*.test.ts"
+      - "**/dist/**"
+      - "**/coverage/**"
+    copied_blocks:
+      enabled: true
+      min_tokens: 100
+  mutation:
+    targets:
+      - src/parse.ts
+  dependency_boundaries:
+    - from: src
+      allow:
+        - src
+        - schemas/v1

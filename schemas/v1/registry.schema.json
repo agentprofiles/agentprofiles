@@ -1,0 +1,96 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://agentprofiles.io/schemas/v1/registry.schema.json",
+  "title": "Agent Profile Registry",
+  "description": "A materialized registry of profiles and deterministic model bindings.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schemaVersion", "profiles", "bindings"],
+  "properties": {
+    "schemaVersion": {
+      "const": 1
+    },
+    "profiles": {
+      "type": "array",
+      "items": {
+        "$ref": "https://agentprofiles.io/schemas/v1/agent-profile.schema.json"
+      }
+    },
+    "bindings": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/binding"
+      }
+    }
+  },
+  "$defs": {
+    "profileId": {
+      "type": "string",
+      "pattern": "^[a-z0-9](?:[a-z0-9.-]*[a-z0-9])?/[a-z0-9](?:[a-z0-9.-]*[a-z0-9])?$"
+    },
+    "binding": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["selector", "profileId"],
+      "properties": {
+        "selector": {
+          "$ref": "#/$defs/selector"
+        },
+        "profileId": {
+          "$ref": "#/$defs/profileId"
+        }
+      }
+    },
+    "selector": {
+      "oneOf": [
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["artifactDigest"],
+          "properties": {
+            "artifactDigest": {
+              "type": "string",
+              "pattern": "^[a-z0-9][a-z0-9-]*:[A-Fa-f0-9]+$"
+            }
+          }
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["canonicalModelId"],
+          "properties": {
+            "canonicalModelId": {
+              "type": "string",
+              "minLength": 1
+            }
+          }
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["providerId", "canonicalModelFamilyId"],
+          "properties": {
+            "providerId": {
+              "type": "string",
+              "minLength": 1
+            },
+            "canonicalModelFamilyId": {
+              "type": "string",
+              "minLength": 1
+            }
+          }
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["modelSizeClass"],
+          "properties": {
+            "modelSizeClass": {
+              "enum": ["tiny", "small", "medium", "large"]
+            }
+          }
+        }
+      ]
+    }
+  }
+}

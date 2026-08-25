@@ -71,9 +71,83 @@ The folder contains one required `profile.yaml` file. That file contains one
 `AgentProfile` resource. The resource has metadata for identity and `spec` for
 behavior.
 
-The runtime should not use the raw folder during a model request. A loader
-reads the profile, resolves inheritance and file references, validates the
-result, and passes a resolved profile snapshot to the harness.
+The runtime should not use the raw folder during a model request. A loader reads
+the profile, resolves inheritance and file references, validates the result, and
+passes a resolved profile snapshot to the harness.
+
+## Materialized Registry
+
+A materialized registry contains validated profile resources and automatic
+selection bindings. It is loaded before a model request and remains immutable
+for that request.
+
+```json
+{
+  "schemaVersion": 1,
+  "profiles": [],
+  "bindings": [
+    {
+      "selector": {
+        "modelSizeClass": "small"
+      },
+      "profileId": "openclaw/small"
+    }
+  ]
+}
+```
+
+| Field           | Required | Type   | Meaning                               |
+| --------------- | -------- | ------ | ------------------------------------- |
+| `schemaVersion` | Yes      | number | Registry schema version. Must be `1`. |
+| `profiles`      | Yes      | array  | Available `AgentProfile` resources.   |
+| `bindings`      | Yes      | array  | Model selectors mapped to profiles.   |
+
+A binding has one selector and one `profileId`. A selector must use exactly one
+of these shapes:
+
+```json
+{ "artifactDigest": "sha256:0123abcd" }
+```
+
+```json
+{ "canonicalModelId": "acme/model-30b" }
+```
+
+```json
+{
+  "providerId": "acme",
+  "canonicalModelFamilyId": "acme/model"
+}
+```
+
+```json
+{ "modelSizeClass": "medium" }
+```
+
+Automatic selection uses this order:
+
+1. Exact model artifact digest.
+2. Exact canonical model id.
+3. Provider-scoped canonical model family.
+4. Trusted model-size class.
+5. The harness fallback profile.
+
+An explicit harness or agent selection takes precedence over registry bindings.
+A registry with more than one match at the same precedence level is invalid.
+Bindings that name missing profiles are invalid.
+
+Model-size classes use total parameter count:
+
+| Class    | Total parameters                            |
+| -------- | ------------------------------------------- |
+| `tiny`   | At most 1 billion                           |
+| `small`  | More than 1 billion and at most 20 billion  |
+| `medium` | More than 20 billion and at most 50 billion |
+| `large`  | More than 50 billion                        |
+
+A size selector may use only trusted structured metadata. A model name that
+looks like it contains a parameter count is not selection evidence. Mixture-of-
+experts models use total parameters in v1.
 
 ## `profile.yaml`
 
@@ -81,13 +155,13 @@ result, and passes a resolved profile snapshot to the harness.
 
 That document must be an `AgentProfile` resource.
 
-| Field | Required | Type | Meaning |
-| --- | --- | --- | --- |
-| `apiVersion` | Yes | string | Resource API version. Must be `agentprofiles.io/v1`. |
-| `kind` | Yes | string | Resource type. Must be `AgentProfile`. |
-| `metadata` | Yes | object | Resource identity. |
-| `extends` | No | string | Parent profile id. |
-| `spec` | Yes | object | Profile behavior. |
+| Field        | Required | Type   | Meaning                                              |
+| ------------ | -------- | ------ | ---------------------------------------------------- |
+| `apiVersion` | Yes      | string | Resource API version. Must be `agentprofiles.io/v1`. |
+| `kind`       | Yes      | string | Resource type. Must be `AgentProfile`.               |
+| `metadata`   | Yes      | object | Resource identity.                                   |
+| `extends`    | No       | string | Parent profile id.                                   |
+| `spec`       | Yes      | object | Profile behavior.                                    |
 
 The resource must be JSON-compatible. YAML anchors, custom tags, and executable
 YAML features are not part of the format.
@@ -102,10 +176,10 @@ metadata:
   name: acme-1-30b
 ```
 
-| Field | Required | Type | Meaning |
-| --- | --- | --- | --- |
-| `namespace` | Yes | string | Owner or registry namespace. |
-| `name` | Yes | string | Profile name inside the namespace. |
+| Field       | Required | Type   | Meaning                            |
+| ----------- | -------- | ------ | ---------------------------------- |
+| `namespace` | Yes      | string | Owner or registry namespace.       |
+| `name`      | Yes      | string | Profile name inside the namespace. |
 
 The profile id is `metadata.namespace/metadata.name`.
 
@@ -121,8 +195,8 @@ in profile identity.
 extends: openclaw/base
 ```
 
-The value must be a profile id. A loader resolves the parent before runtime
-use. Missing parents and inheritance cycles are validation errors.
+The value must be a profile id. A loader resolves the parent before runtime use.
+Missing parents and inheritance cycles are validation errors.
 
 A child profile may override fields from its parent. Field merge behavior must
 be defined per field. Generic deep merge is not part of the v1 format.
@@ -144,10 +218,10 @@ spec:
     toolProfile: lean
 ```
 
-| Field | Required | Type | Meaning |
-| --- | --- | --- | --- |
-| `common` | Yes | object | Portable fields that other harnesses may understand. |
-| domain-named sections | No | object | Harness-owned fields, such as `openclaw.ai`. |
+| Field                 | Required | Type   | Meaning                                              |
+| --------------------- | -------- | ------ | ---------------------------------------------------- |
+| `common`              | Yes      | object | Portable fields that other harnesses may understand. |
+| domain-named sections | No       | object | Harness-owned fields, such as `openclaw.ai`.         |
 
 Unknown fields under `spec.common` are validation errors. Unknown domain-named
 sections may be ignored by implementations that do not own or understand them,
@@ -159,10 +233,10 @@ The format does not include a generic `extra` map.
 
 `spec.common` contains portable profile fields.
 
-| Field | Required | Type | Meaning |
-| --- | --- | --- | --- |
-| `systemPrompt` | No | object | Stable system prompt source for this profile. |
-| `thinkingLevel` | No | string | Portable default thinking level. |
+| Field           | Required | Type   | Meaning                                       |
+| --------------- | -------- | ------ | --------------------------------------------- |
+| `systemPrompt`  | No       | object | Stable system prompt source for this profile. |
+| `thinkingLevel` | No       | string | Portable default thinking level.              |
 
 If `spec.common` is empty, the harness uses its own defaults for portable
 behavior.
@@ -189,9 +263,9 @@ systemPrompt:
     path: ./prompts/system.md
 ```
 
-| Field | Required | Type | Meaning |
-| --- | --- | --- | --- |
-| `text` | No | string | Inline prompt text. |
+| Field       | Required                 | Type   | Meaning                                     |
+| ----------- | ------------------------ | ------ | ------------------------------------------- |
+| `text`      | No                       | string | Inline prompt text.                         |
 | `file.path` | Yes, when `file` is used | string | Relative path to a prompt file in the pack. |
 
 `file.path` is relative to `profile.yaml`. Absolute paths are invalid. Paths
@@ -210,14 +284,14 @@ thinkingLevel: high
 
 Allowed values:
 
-| Value | Meaning |
-| --- | --- |
-| `off` | Disable thinking when the driver supports that. |
-| `minimal` | Use the smallest available thinking budget. |
-| `low` | Use a low thinking budget. |
-| `medium` | Use a medium thinking budget. |
-| `high` | Use a high thinking budget. |
-| `xhigh` | Use an extra-high thinking budget. |
+| Value     | Meaning                                         |
+| --------- | ----------------------------------------------- |
+| `off`     | Disable thinking when the driver supports that. |
+| `minimal` | Use the smallest available thinking budget.     |
+| `low`     | Use a low thinking budget.                      |
+| `medium`  | Use a medium thinking budget.                   |
+| `high`    | Use a high thinking budget.                     |
+| `xhigh`   | Use an extra-high thinking budget.              |
 
 The selected model driver remains responsible for provider support and request
 validation. If a driver cannot use the requested value, it must apply a named
@@ -238,8 +312,8 @@ spec:
 `spec.common` is portable. A domain-named section is owned by the project that
 controls that domain.
 
-Use domain sections for behavior that is specific to one harness or project.
-Do not put harness-specific values in `spec.common`.
+Use domain sections for behavior that is specific to one harness or project. Do
+not put harness-specific values in `spec.common`.
 
 ## `spec.openclaw.ai`
 
@@ -247,9 +321,9 @@ Do not put harness-specific values in `spec.common`.
 
 Other harnesses may ignore it.
 
-| Field | Required | Type | Meaning |
-| --- | --- | --- | --- |
-| `toolProfile` | No | string | OpenClaw tool behavior profile. |
+| Field         | Required | Type   | Meaning                         |
+| ------------- | -------- | ------ | ------------------------------- |
+| `toolProfile` | No       | string | OpenClaw tool behavior profile. |
 
 ### `toolProfile`
 
@@ -260,8 +334,8 @@ openclaw.ai:
 
 Allowed values:
 
-| Value | Meaning |
-| --- | --- |
+| Value  | Meaning                              |
+| ------ | ------------------------------------ |
 | `lean` | Apply OpenClaw's Lean tool behavior. |
 
 If `toolProfile` is omitted, OpenClaw uses its normal tool behavior.
@@ -313,6 +387,14 @@ pack during a model request.
 
 ## Validation
 
+The machine-readable v1 schemas are
+[`agent-profile.schema.json`](https://github.com/agentprofiles/agentprofiles/blob/main/schemas/v1/agent-profile.schema.json)
+and
+[`registry.schema.json`](https://github.com/agentprofiles/agentprofiles/blob/main/schemas/v1/registry.schema.json).
+Shared valid, invalid, and resolved examples live under
+[`fixtures/v1`](https://github.com/agentprofiles/agentprofiles/tree/main/fixtures/v1).
+Reference implementations must pass these fixtures before release.
+
 A v1 validator must reject:
 
 - missing `profile.yaml`;
@@ -330,7 +412,11 @@ A v1 validator must reject:
 - inheritance cycles;
 - referenced files that do not exist;
 - referenced file paths that escape the profile pack;
-- generic `extra` maps.
+- generic `extra` maps;
+- duplicate profile ids in one registry;
+- registry bindings with zero or multiple selector kinds;
+- registry bindings that name missing profiles;
+- ambiguous registry bindings at the same precedence level.
 
 Future validators may also check package digests, signatures, registry
 provenance, and package lock data. Those are distribution concerns and are not

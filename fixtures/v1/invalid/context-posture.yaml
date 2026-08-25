@@ -1,0 +1,9 @@
+apiVersion: agentprofiles.io/v1
+kind: AgentProfile
+metadata:
+  namespace: openclaw
+  name: invalid-context-posture
+spec:
+  common: {}
+  openclaw.ai:
+    contextPosture: constrained

@@ -11,8 +11,10 @@ node_modules/
 
 # Builds
 **/build/
+**/coverage/
 **/dist/
 **/*.egg-info/
+.stryker-tmp/
 
 # VitePress
 docs/.vitepress/cache/

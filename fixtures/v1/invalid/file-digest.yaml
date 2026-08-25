@@ -1,0 +1,11 @@
+apiVersion: agentprofiles.io/v1
+kind: AgentProfile
+metadata:
+  namespace: openclaw
+  name: invalid-file-digest
+spec:
+  common:
+    systemPrompt:
+      file:
+        path: ./prompts/system.md
+        digest: sha256:2f8a

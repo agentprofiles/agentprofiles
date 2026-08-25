@@ -1,0 +1,10 @@
+apiVersion: agentprofiles.io/v1
+kind: AgentProfile
+metadata:
+  namespace: openclaw
+  name: invalid-path
+spec:
+  common:
+    systemPrompt:
+      file:
+        path: ../outside.md

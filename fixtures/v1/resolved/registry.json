@@ -1,0 +1,45 @@
+{
+  "schemaVersion": 1,
+  "profiles": [
+    {
+      "apiVersion": "agentprofiles.io/v1",
+      "kind": "AgentProfile",
+      "metadata": {
+        "namespace": "openclaw",
+        "name": "base"
+      },
+      "spec": {
+        "common": {}
+      }
+    },
+    {
+      "apiVersion": "agentprofiles.io/v1",
+      "kind": "AgentProfile",
+      "metadata": {
+        "namespace": "openclaw",
+        "name": "small"
+      },
+      "extends": "openclaw/base",
+      "spec": {
+        "common": {},
+        "openclaw.ai": {
+          "toolProfile": "lean"
+        }
+      }
+    }
+  ],
+  "bindings": [
+    {
+      "selector": {
+        "modelSizeClass": "tiny"
+      },
+      "profileId": "openclaw/small"
+    },
+    {
+      "selector": {
+        "modelSizeClass": "small"
+      },
+      "profileId": "openclaw/small"
+    }
+  ]
+}

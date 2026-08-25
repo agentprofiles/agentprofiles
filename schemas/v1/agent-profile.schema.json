@@ -1,0 +1,125 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://agentprofiles.io/schemas/v1/agent-profile.schema.json",
+  "title": "Agent Profile",
+  "description": "A portable profile for configuring an agent harness for a resolved model.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["apiVersion", "kind", "metadata", "spec"],
+  "properties": {
+    "apiVersion": {
+      "const": "agentprofiles.io/v1"
+    },
+    "kind": {
+      "const": "AgentProfile"
+    },
+    "metadata": {
+      "$ref": "#/$defs/metadata"
+    },
+    "extends": {
+      "$ref": "#/$defs/profileId"
+    },
+    "spec": {
+      "$ref": "#/$defs/spec"
+    }
+  },
+  "$defs": {
+    "name": {
+      "type": "string",
+      "pattern": "^[a-z0-9](?:[a-z0-9.-]*[a-z0-9])?$"
+    },
+    "profileId": {
+      "type": "string",
+      "pattern": "^[a-z0-9](?:[a-z0-9.-]*[a-z0-9])?/[a-z0-9](?:[a-z0-9.-]*[a-z0-9])?$"
+    },
+    "metadata": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["namespace", "name"],
+      "properties": {
+        "namespace": {
+          "$ref": "#/$defs/name"
+        },
+        "name": {
+          "$ref": "#/$defs/name"
+        }
+      }
+    },
+    "systemPrompt": {
+      "oneOf": [
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["text"],
+          "properties": {
+            "text": {
+              "type": "string",
+              "minLength": 1
+            }
+          }
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["file"],
+          "properties": {
+            "file": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": ["path"],
+              "properties": {
+                "path": {
+                  "type": "string",
+                  "minLength": 1,
+                  "pattern": "^(?!/)(?![A-Za-z][A-Za-z0-9+.-]*:)(?!.*(?:^|/)\\.\\.(?:/|$))(?!.*\\\\).+$"
+                }
+              }
+            }
+          }
+        }
+      ]
+    },
+    "common": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "systemPrompt": {
+          "$ref": "#/$defs/systemPrompt"
+        },
+        "thinkingLevel": {
+          "enum": ["off", "minimal", "low", "medium", "high", "xhigh"]
+        }
+      }
+    },
+    "openClaw": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "toolProfile": {
+          "const": "lean"
+        }
+      }
+    },
+    "domainSection": {
+      "type": "object"
+    },
+    "spec": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["common"],
+      "properties": {
+        "common": {
+          "$ref": "#/$defs/common"
+        },
+        "openclaw.ai": {
+          "$ref": "#/$defs/openClaw"
+        }
+      },
+      "patternProperties": {
+        "^[a-z0-9](?:[a-z0-9.-]*[a-z0-9])?\\.[a-z]{2,}$": {
+          "$ref": "#/$defs/domainSection"
+        }
+      }
+    }
+  }
+}

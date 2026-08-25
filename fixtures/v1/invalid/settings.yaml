@@ -1,0 +1,9 @@
+apiVersion: agentprofiles.io/v1
+kind: AgentProfile
+metadata:
+  namespace: openclaw
+  name: invalid-settings
+spec:
+  common: {}
+  settings:
+    responseStyle: friendly

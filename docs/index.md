@@ -1,11 +1,14 @@
 ---
 title: Agent Profiles Overview
-description: An open and portable format for customizing agent harnesses for specific AI models.
+description:
+  An open and portable format for customizing agent harnesses for specific AI
+  models.
 ---
 
 # Agent Profiles Overview
 
-An open and portable format for customizing agent harnesses for specific AI models.
+An open and portable format for customizing agent harnesses for specific AI
+models.
 
 ## What are Agent Profiles?
 
@@ -16,8 +19,8 @@ They let a harness choose the right runtime profile for a model: which tools to
 expose, which system prompt to load, which thinking level to use, and which
 harness-specific behavior to apply.
 
-The profile is tied to the model, but it stays separate from provider auth,
-HTTP request details, cache controls, and server tuning.
+The profile is tied to the model, but it stays separate from provider auth, HTTP
+request details, cache controls, and server tuning.
 
 ```yaml
 apiVersion: agentprofiles.io/v1
@@ -59,8 +62,8 @@ Agent Profiles give teams a concrete artifact that is:
 
 - **Portable**: the same profile shape can be used across compatible harnesses.
 - **Versioned**: behavior changes can be reviewed, pinned, and rolled back.
-- **Layerable**: a base profile can be reused and overridden for a model
-  family, exact model, enterprise deployment, or unreleased model.
+- **Layerable**: a base profile can be reused and overridden for a model family,
+  exact model, enterprise deployment, or unreleased model.
 - **Inspectable**: operators can see which profile was selected and why.
 - **Local at runtime**: installed profiles are resolved and validated before
   use, not fetched during a model request.
@@ -79,12 +82,12 @@ The runtime flow is explicit:
 
 All behavior fields live under `spec`. The `common` section is the
 harness-agnostic part. Domain-named sections such as `openclaw.ai` are owned by
-the corresponding harness or project and can grow independently without
-changing the common schema.
+the corresponding harness or project and can grow independently without changing
+the common schema.
 
-The phase-one common fields are `systemPrompt` and `thinkingLevel`. Projects
-can add their own fields under their own domain-named section. For example,
-OpenClaw can use `spec.openclaw.ai.toolProfile` for its own tool behavior.
+The phase-one common fields are `systemPrompt` and `thinkingLevel`. Projects can
+add their own fields under their own domain-named section. For example, OpenClaw
+can use `spec.openclaw.ai.toolProfile` for its own tool behavior.
 
 `thinkingLevel` uses the portable Pi level set: `off`, `minimal`, `low`,
 `medium`, `high`, and `xhigh`.
@@ -128,8 +131,8 @@ drivers, secret storage, and serving presets.
 ## Open development
 
 Agent Profiles are being shaped in public. The current work is focused on the
-core resource model, reference profiles, and TypeScript and Python packages for
-future consumers.
+core resource model, conformance fixtures, and the TypeScript reference library.
+Other language implementations can be added when real consumers need them.
 
 ## Get started
 
@@ -144,6 +147,6 @@ future consumers.
   </a>
   <a class="profile-card" href="https://github.com/agentprofiles/agentprofiles">
     <strong>Repository</strong>
-    <span>Follow the docs, packages, and future reference artifacts.</span>
+    <span>Follow the specification, schemas, fixtures, and reference library.</span>
   </a>
 </div>
