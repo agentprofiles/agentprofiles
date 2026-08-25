@@ -14,7 +14,7 @@ harness should run with a resolved model.
 
 They let a harness choose the right runtime profile for a model: which tools to
 expose, which system prompt to load, which thinking level to use, and which
-harness-specific settings to apply.
+harness-specific behavior to apply.
 
 The profile is tied to the model, but it stays separate from provider auth,
 HTTP request details, cache controls, and server tuning.
@@ -47,7 +47,7 @@ The profile tells the harness how to run the agent with that model.
 Profiles can describe shared behavior that many harnesses may understand, and
 they can also include domain-named sections for harness-specific behavior. For
 example, `spec.common` can hold portable fields, while `spec.openclaw.ai` can
-hold OpenClaw-owned settings.
+hold OpenClaw-owned behavior.
 
 ## Why Agent Profiles?
 

@@ -9,7 +9,7 @@ This specification defines the v1 format for Agent Profile packs.
 
 An Agent Profile tells an agent harness how to run with a model it has already
 selected. The profile can set portable behavior, such as the system prompt and
-thinking level, and it can carry harness-specific settings in domain-named
+thinking level, and it can carry harness-specific behavior in domain-named
 sections.
 
 ## Profile Pack Structure
@@ -148,7 +148,6 @@ spec:
 | --- | --- | --- | --- |
 | `common` | Yes | object | Portable fields that other harnesses may understand. |
 | domain-named sections | No | object | Harness-owned fields, such as `openclaw.ai`. |
-| `settings` | No | object | Profile-owned settings validated by a closed schema. |
 
 Unknown fields under `spec.common` are validation errors. Unknown domain-named
 sections may be ignored by implementations that do not own or understand them,
@@ -190,26 +189,16 @@ systemPrompt:
     path: ./prompts/system.md
 ```
 
-With a digest:
-
-```yaml
-systemPrompt:
-  file:
-    path: ./prompts/system.md
-    digest: sha256:2f8a...
-```
-
 | Field | Required | Type | Meaning |
 | --- | --- | --- | --- |
 | `text` | No | string | Inline prompt text. |
 | `file.path` | Yes, when `file` is used | string | Relative path to a prompt file in the pack. |
-| `file.digest` | No | string | Content digest for the referenced file. |
 
 `file.path` is relative to `profile.yaml`. Absolute paths are invalid. Paths
 that escape the profile pack are invalid.
 
-If `file.digest` is present, the loader must verify the referenced file content.
-A digest mismatch is a validation error.
+Per-file digests are not part of v1. A future package digest or signature can
+cover the complete profile pack, including referenced prompt files.
 
 ### `thinkingLevel`
 
@@ -261,8 +250,6 @@ Other harnesses may ignore it.
 | Field | Required | Type | Meaning |
 | --- | --- | --- | --- |
 | `toolProfile` | No | string | OpenClaw tool behavior profile. |
-| `contextPosture` | No | string | Diagnostic compactness intent. |
-| `thinkingLevel` | No | string | OpenClaw-only thinking level. |
 
 ### `toolProfile`
 
@@ -279,56 +266,6 @@ Allowed values:
 
 If `toolProfile` is omitted, OpenClaw uses its normal tool behavior.
 
-### `contextPosture`
-
-```yaml
-openclaw.ai:
-  contextPosture: constrained
-```
-
-Allowed values:
-
-| Value | Meaning |
-| --- | --- |
-| `constrained` | Record that the profile is meant for constrained context use. |
-
-`contextPosture` is diagnostic in v1. It is not a context-window override.
-
-### `thinkingLevel`
-
-```yaml
-openclaw.ai:
-  thinkingLevel: adaptive
-```
-
-Allowed values:
-
-| Value | Meaning |
-| --- | --- |
-| `adaptive` | Let OpenClaw select a model-appropriate thinking level. |
-| `max` | Use OpenClaw's maximum thinking level when supported. |
-
-These values are OpenClaw-specific. Portable thinking values belong in
-`spec.common.thinkingLevel`.
-
-## `spec.settings`
-
-`spec.settings` is optional.
-
-It is for settings that are owned by the selected profile and validated by that
-profile's closed settings schema.
-
-```yaml
-spec:
-  settings: {}
-```
-
-Do not use `settings` as a generic configuration bag. A setting is valid only
-when the profile schema defines it.
-
-Provider credentials, HTTP request options, cache controls, server launch
-arguments, and driver payload fragments do not belong in `settings`.
-
 ## File References
 
 Profile file references are resolved from `profile.yaml`.
@@ -338,7 +275,6 @@ Rules:
 - paths must be relative;
 - paths must stay inside the profile pack;
 - missing referenced files are validation errors;
-- digest mismatches are validation errors;
 - referenced files are read before runtime use;
 - referenced files must not be fetched during a model request.
 
@@ -369,9 +305,8 @@ The resolution flow is:
 3. Resolve `extends`, if present.
 4. Reject missing parents and cycles.
 5. Resolve file references.
-6. Verify digests, if present.
-7. Apply field-specific inheritance rules.
-8. Produce one resolved profile snapshot.
+6. Apply field-specific inheritance rules.
+7. Produce one resolved profile snapshot.
 
 The harness consumes the resolved snapshot. It should not read from the profile
 pack during a model request.
@@ -395,12 +330,11 @@ A v1 validator must reject:
 - inheritance cycles;
 - referenced files that do not exist;
 - referenced file paths that escape the profile pack;
-- digest mismatches;
 - generic `extra` maps.
 
-Future validators may also check signatures, registry provenance, and package
-lock data. Those are distribution concerns and are not required by the v1 pack
-format.
+Future validators may also check package digests, signatures, registry
+provenance, and package lock data. Those are distribution concerns and are not
+required by the v1 pack format.
 
 ## Boundaries
 
@@ -440,11 +374,10 @@ The v1 pack format defines the local profile artifact.
 Future work may define:
 
 - registry metadata;
-- signatures;
+- whole-pack digests and signatures;
 - lockfiles;
 - package publishing flows;
 - dependency resolution across registries;
-- richer profile settings schemas;
 - reference validators for TypeScript and Python packages.
 
 Those features should build on the same local pack contract: one required
