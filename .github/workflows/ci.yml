@@ -21,6 +21,12 @@ jobs:
           cache: npm
 
       - run: npm ci
+
+      - name: Install the Rollup binary for the CI architecture
+        run: |
+          ROLLUP_VERSION="$(node -p "require('rollup/package.json').version")"
+          npm install --no-save --package-lock=false "@rollup/rollup-linux-x64-gnu@$ROLLUP_VERSION"
+
       - run: npm run format
       - run: npm run lint
       - run: npm run typecheck
