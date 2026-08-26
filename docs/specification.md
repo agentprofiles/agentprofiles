@@ -45,6 +45,7 @@ spec:
       file:
         path: ./prompts/system.md
     thinkingLevel: high
+    contextSerialization: lean
 ```
 
 ## OpenClaw Base Example
@@ -202,6 +203,10 @@ A child profile may override fields from its parent. Field merge behavior must
 be defined per field. Generic deep merge is not part of the v1 format.
 
 For v1, `systemPrompt` is replaced as a whole when a child sets it.
+`thinkingLevel` and `contextSerialization` use scalar replacement. An omitted
+scalar inherits its parent value. A scalar set by the child replaces the parent
+value. This means `contextSerialization: default` resets an inherited `lean`
+value.
 
 ## `spec`
 
@@ -214,6 +219,7 @@ spec:
       file:
         path: ./prompts/system.md
     thinkingLevel: high
+    contextSerialization: lean
   openclaw.ai:
     toolProfile: lean
 ```
@@ -233,10 +239,11 @@ The format does not include a generic `extra` map.
 
 `spec.common` contains portable profile fields.
 
-| Field           | Required | Type   | Meaning                                       |
-| --------------- | -------- | ------ | --------------------------------------------- |
-| `systemPrompt`  | No       | object | Stable system prompt source for this profile. |
-| `thinkingLevel` | No       | string | Portable default thinking level.              |
+| Field                  | Required | Type   | Meaning                                           |
+| ---------------------- | -------- | ------ | ------------------------------------------------- |
+| `systemPrompt`         | No       | object | Stable system prompt source for this profile.     |
+| `thinkingLevel`        | No       | string | Portable default thinking level.                  |
+| `contextSerialization` | No       | string | Portable conversation context serialization mode. |
 
 If `spec.common` is empty, the harness uses its own defaults for portable
 behavior.
@@ -296,6 +303,32 @@ Allowed values:
 The selected model driver remains responsible for provider support and request
 validation. If a driver cannot use the requested value, it must apply a named
 fallback or reject the profile according to its own capability policy.
+
+### `contextSerialization`
+
+`contextSerialization` selects how much conversation context the harness sends
+to the model.
+
+```yaml
+contextSerialization: lean
+```
+
+Allowed values:
+
+| Value     | Meaning                                                                                       |
+| --------- | --------------------------------------------------------------------------------------------- |
+| `default` | Use the harness's normal context serialization.                                               |
+| `lean`    | Remove redundant context while preserving conversation, reply, delivery, and tool continuity. |
+
+The field uses scalar replacement during `extends` resolution. If a parent sets
+`lean`, a child can set `default` to reset it. If a child omits the field, it
+inherits the parent value.
+
+A `lean` implementation must preserve model-visible facts required to identify
+speakers, follow replies and mentions, deliver responses, and continue tool
+calls and tool results. It may remove duplicate messages and internal
+persistence, usage, cost, idempotency, or transport data that does not affect
+model behavior. The harness owns the exact serialization format.
 
 ## Domain-Named Sections
 
@@ -407,6 +440,7 @@ A v1 validator must reject:
 - missing `spec`;
 - unknown fields under `spec.common`;
 - invalid `thinkingLevel` values;
+- invalid `contextSerialization` values;
 - invalid OpenClaw section values;
 - parent profiles that cannot be resolved;
 - inheritance cycles;

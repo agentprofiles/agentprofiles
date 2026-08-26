@@ -5,6 +5,7 @@ metadata:
   name: small
 extends: openclaw/base
 spec:
-  common: {}
+  common:
+    contextSerialization: lean
   openclaw.ai:
     toolProfile: lean

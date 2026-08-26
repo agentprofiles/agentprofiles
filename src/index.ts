@@ -7,6 +7,7 @@ export type {
   AgentProfileBinding,
   AgentProfileBindingSelector,
   AgentProfileCommon,
+  AgentProfileContextSerialization,
   AgentProfileRegistry,
   AgentProfileResource,
   AgentProfileSpec,

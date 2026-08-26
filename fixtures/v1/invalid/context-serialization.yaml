@@ -1,0 +1,8 @@
+apiVersion: agentprofiles.io/v1
+kind: AgentProfile
+metadata:
+  namespace: openclaw
+  name: invalid-context-serialization
+spec:
+  common:
+    contextSerialization: compact

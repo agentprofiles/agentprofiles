@@ -21,9 +21,25 @@
       },
       "extends": "openclaw/base",
       "spec": {
-        "common": {},
+        "common": {
+          "contextSerialization": "lean"
+        },
         "openclaw.ai": {
           "toolProfile": "lean"
+        }
+      }
+    },
+    {
+      "apiVersion": "agentprofiles.io/v1",
+      "kind": "AgentProfile",
+      "metadata": {
+        "namespace": "openclaw",
+        "name": "small-default"
+      },
+      "extends": "openclaw/small",
+      "spec": {
+        "common": {
+          "contextSerialization": "default"
         }
       }
     }
