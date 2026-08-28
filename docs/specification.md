@@ -37,7 +37,7 @@ pack, but it must not reference files outside the pack.
 apiVersion: agentprofiles.io/v1
 kind: AgentProfile
 metadata:
-  namespace: openclaw
+  namespace: acme
   name: acme-1-30b
 spec:
   common:
@@ -45,16 +45,15 @@ spec:
       file:
         path: ./prompts/system.md
     thinkingLevel: high
-    contextSerialization: lean
 ```
 
-## OpenClaw Base Example
+## Base Profile Example
 
 ```yaml
 apiVersion: agentprofiles.io/v1
 kind: AgentProfile
 metadata:
-  namespace: openclaw
+  namespace: acme
   name: base
 spec:
   common:
@@ -91,7 +90,7 @@ for that request.
       "selector": {
         "modelSizeClass": "small"
       },
-      "profileId": "openclaw/small"
+      "profileId": "acme/small"
     }
   ]
 }
@@ -173,7 +172,7 @@ YAML features are not part of the format.
 
 ```yaml
 metadata:
-  namespace: openclaw
+  namespace: acme
   name: acme-1-30b
 ```
 
@@ -193,7 +192,7 @@ in profile identity.
 `extends` names a parent profile.
 
 ```yaml
-extends: openclaw/base
+extends: acme/base
 ```
 
 The value must be a profile id. A loader resolves the parent before runtime use.
@@ -203,10 +202,14 @@ A child profile may override fields from its parent. Field merge behavior must
 be defined per field. Generic deep merge is not part of the v1 format.
 
 For v1, `systemPrompt` is replaced as a whole when a child sets it.
-`thinkingLevel` and `contextSerialization` use scalar replacement. An omitted
-scalar inherits its parent value. A scalar set by the child replaces the parent
-value. This means `contextSerialization: default` resets an inherited `lean`
-value.
+`thinkingLevel` uses scalar replacement. An omitted portable field inherits its
+parent value. A portable field set by the child replaces the parent value.
+
+Domain-named sections are opaque to the core format. The project that owns a
+domain section owns all field semantics, including validation and inheritance
+defaults. A core loader preserves profile ancestry and the raw domain-section
+values so the owning consumer can resolve them. The core does not merge fields
+inside a domain section.
 
 ## `spec`
 
@@ -219,19 +222,18 @@ spec:
       file:
         path: ./prompts/system.md
     thinkingLevel: high
-    contextSerialization: lean
-  openclaw.ai:
-    toolProfile: lean
+  example.com:
+    mode: compact
 ```
 
 | Field                 | Required | Type   | Meaning                                              |
 | --------------------- | -------- | ------ | ---------------------------------------------------- |
 | `common`              | Yes      | object | Portable fields that other harnesses may understand. |
-| domain-named sections | No       | object | Harness-owned fields, such as `openclaw.ai`.         |
+| domain-named sections | No       | object | Opaque fields owned by the named project.            |
 
-Unknown fields under `spec.common` are validation errors. Unknown domain-named
-sections may be ignored by implementations that do not own or understand them,
-unless that implementation chooses a stricter policy.
+Unknown fields under `spec.common` are validation errors. The core validates a
+domain-named section only as a JSON object and preserves its contents. A
+consumer may ignore sections that it does not own or understand.
 
 The format does not include a generic `extra` map.
 
@@ -239,11 +241,10 @@ The format does not include a generic `extra` map.
 
 `spec.common` contains portable profile fields.
 
-| Field                  | Required | Type   | Meaning                                           |
-| ---------------------- | -------- | ------ | ------------------------------------------------- |
-| `systemPrompt`         | No       | object | Stable system prompt source for this profile.     |
-| `thinkingLevel`        | No       | string | Portable default thinking level.                  |
-| `contextSerialization` | No       | string | Portable conversation context serialization mode. |
+| Field           | Required | Type   | Meaning                                       |
+| --------------- | -------- | ------ | --------------------------------------------- |
+| `systemPrompt`  | No       | object | Stable system prompt source for this profile. |
+| `thinkingLevel` | No       | string | Portable default thinking level.              |
 
 If `spec.common` is empty, the harness uses its own defaults for portable
 behavior.
@@ -304,32 +305,6 @@ The selected model driver remains responsible for provider support and request
 validation. If a driver cannot use the requested value, it must apply a named
 fallback or reject the profile according to its own capability policy.
 
-### `contextSerialization`
-
-`contextSerialization` selects how much conversation context the harness sends
-to the model.
-
-```yaml
-contextSerialization: lean
-```
-
-Allowed values:
-
-| Value     | Meaning                                                                                       |
-| --------- | --------------------------------------------------------------------------------------------- |
-| `default` | Use the harness's normal context serialization.                                               |
-| `lean`    | Remove redundant context while preserving conversation, reply, delivery, and tool continuity. |
-
-The field uses scalar replacement during `extends` resolution. If a parent sets
-`lean`, a child can set `default` to reset it. If a child omits the field, it
-inherits the parent value.
-
-A `lean` implementation must preserve model-visible facts required to identify
-speakers, follow replies and mentions, deliver responses, and continue tool
-calls and tool results. It may remove duplicate messages and internal
-persistence, usage, cost, idempotency, or transport data that does not affect
-model behavior. The harness owns the exact serialization format.
-
 ## Domain-Named Sections
 
 Domain-named sections live under `spec`.
@@ -338,40 +313,23 @@ Domain-named sections live under `spec`.
 spec:
   common:
     thinkingLevel: high
-  openclaw.ai:
-    toolProfile: lean
+  example.com:
+    mode: compact
 ```
 
 `spec.common` is portable. A domain-named section is owned by the project that
-controls that domain.
+controls that domain. Core types and schemas do not list fields for a specific
+consumer.
 
 Use domain sections for behavior that is specific to one harness or project. Do
-not put harness-specific values in `spec.common`.
+not put harness-specific values in `spec.common`. The owning project validates
+the section, defines defaults, resolves inheritance, and maps the result to
+runtime behavior.
 
-## `spec.openclaw.ai`
-
-`spec.openclaw.ai` is the OpenClaw-owned section.
-
-Other harnesses may ignore it.
-
-| Field         | Required | Type   | Meaning                         |
-| ------------- | -------- | ------ | ------------------------------- |
-| `toolProfile` | No       | string | OpenClaw tool behavior profile. |
-
-### `toolProfile`
-
-```yaml
-openclaw.ai:
-  toolProfile: lean
-```
-
-Allowed values:
-
-| Value  | Meaning                              |
-| ------ | ------------------------------------ |
-| `lean` | Apply OpenClaw's Lean tool behavior. |
-
-If `toolProfile` is omitted, OpenClaw uses its normal tool behavior.
+A core implementation treats each domain section as an opaque JSON object. It
+must not apply a generic deep merge. It preserves the ordered profile ancestry
+and raw section values for the owning consumer. Consumer adapters stay in the
+consumer repository and are not part of the core package.
 
 ## File References
 
@@ -440,8 +398,7 @@ A v1 validator must reject:
 - missing `spec`;
 - unknown fields under `spec.common`;
 - invalid `thinkingLevel` values;
-- invalid `contextSerialization` values;
-- invalid OpenClaw section values;
+- domain-named sections that are not JSON objects;
 - parent profiles that cannot be resolved;
 - inheritance cycles;
 - referenced files that do not exist;

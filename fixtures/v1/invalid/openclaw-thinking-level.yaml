@@ -1,9 +1,0 @@
-apiVersion: agentprofiles.io/v1
-kind: AgentProfile
-metadata:
-  namespace: openclaw
-  name: invalid-openclaw-thinking
-spec:
-  common: {}
-  openclaw.ai:
-    thinkingLevel: adaptive

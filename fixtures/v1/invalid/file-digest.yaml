@@ -1,7 +1,7 @@
 apiVersion: agentprofiles.io/v1
 kind: AgentProfile
 metadata:
-  namespace: openclaw
+  namespace: acme
   name: invalid-file-digest
 spec:
   common:

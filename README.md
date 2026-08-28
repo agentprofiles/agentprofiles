@@ -5,25 +5,24 @@ customizing agent harnesses for specific AI models. It validates portable
 profile resources while keeping model identity, provider transport, credentials,
 and serving settings in their existing owners.
 
-A profile can select a stable system prompt, a portable thinking level, context
-serialization, and harness-specific behavior:
+A profile can select a stable system prompt and a portable thinking level. A
+domain-named section can carry behavior owned by one harness:
 
 ```yaml
 apiVersion: agentprofiles.io/v1
 kind: AgentProfile
 metadata:
-  namespace: openclaw
-  name: small
-extends: openclaw/base
+  namespace: acme
+  name: compact
+extends: acme/base
 spec:
   common:
     systemPrompt:
       file:
         path: ./prompts/system.md
     thinkingLevel: low
-    contextSerialization: lean
-  openclaw.ai:
-    toolProfile: lean
+  example.com:
+    mode: compact
 ```
 
 ## Install
@@ -44,16 +43,21 @@ const profile = parseAgentProfileYaml(`
 apiVersion: agentprofiles.io/v1
 kind: AgentProfile
 metadata:
-  namespace: openclaw
-  name: small
+  namespace: acme
+  name: compact
 spec:
   common:
     thinkingLevel: low
-    contextSerialization: lean
+  example.com:
+    mode: compact
 `);
 
 console.log(profile.metadata.name);
 ```
+
+The core checks that a domain-named section is a JSON object and otherwise
+preserves it unchanged. The consumer that owns the domain validates its fields
+and defines its defaults and inheritance rules.
 
 The package also exports registry parsing, object validation, TypeScript types,
 and the v1 JSON Schemas. It does not load profile packs, read referenced files,

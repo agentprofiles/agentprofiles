@@ -8,7 +8,11 @@ These instructions apply to this repository.
 - Add or update tests and conformance fixtures for every behavior change.
 - Keep portable schema, parsing, and resolution behavior independent from any
   harness implementation.
-- Keep OpenClaw behavior, provider drivers, authentication, and serving settings
+- Add a field to `spec.common` only when its meaning and inheritance rules apply
+  across independent harnesses. One consumer is not enough evidence.
+- Treat domain-named sections as opaque JSON objects. The core must not define,
+  type, validate, default, or merge fields owned by a consumer.
+- Keep consumer adapters, provider drivers, authentication, and serving settings
   outside the shared library.
 - Do not add a dependency unless it removes real parsing or validation
   complexity.

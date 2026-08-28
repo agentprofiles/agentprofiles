@@ -88,18 +88,6 @@
         },
         "thinkingLevel": {
           "enum": ["off", "minimal", "low", "medium", "high", "xhigh"]
-        },
-        "contextSerialization": {
-          "enum": ["default", "lean"]
-        }
-      }
-    },
-    "openClaw": {
-      "type": "object",
-      "additionalProperties": false,
-      "properties": {
-        "toolProfile": {
-          "const": "lean"
         }
       }
     },
@@ -113,9 +101,6 @@
       "properties": {
         "common": {
           "$ref": "#/$defs/common"
-        },
-        "openclaw.ai": {
-          "$ref": "#/$defs/openClaw"
         }
       },
       "patternProperties": {

@@ -92,10 +92,18 @@ jobs:
             name: smoke
           spec:
             common:
-              contextSerialization: lean
+              thinkingLevel: low
+            example.com:
+              mode: compact
           `);
 
-          if (profile.spec.common.contextSerialization !== "lean") {
+          const extension = profile.spec["example.com"];
+          if (
+            profile.spec.common.thinkingLevel !== "low" ||
+            typeof extension !== "object" ||
+            extension === null ||
+            extension.mode !== "compact"
+          ) {
             throw new Error("Packed package smoke test returned an unexpected profile");
           }
           NODE

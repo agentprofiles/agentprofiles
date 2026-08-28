@@ -2,8 +2,7 @@ apiVersion: agentprofiles.io/v1
 kind: AgentProfile
 metadata:
   namespace: acme
-  name: invalid-settings
+  name: domain-section-scalar
 spec:
   common: {}
-  settings:
-    responseStyle: friendly
+  example.com: compact
