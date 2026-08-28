@@ -97,6 +97,15 @@ describe("schema validation", () => {
     expect(profile.metadata.name).toBe("base");
   });
 
+  it("accepts explicit default context serialization as an inheritance reset", () => {
+    const profile = parseAgentProfileYaml(
+      readFixture("valid/context-serialization-default.yaml"),
+    );
+
+    expect(profile.extends).toBe("openclaw/small");
+    expect(profile.spec.common.contextSerialization).toBe("default");
+  });
+
   it("reports profile validation issues", () => {
     try {
       validateAgentProfile({});

@@ -88,6 +88,9 @@
         },
         "thinkingLevel": {
           "enum": ["off", "minimal", "low", "medium", "high", "xhigh"]
+        },
+        "contextSerialization": {
+          "enum": ["default", "lean"]
         }
       }
     },
