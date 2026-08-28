@@ -5,7 +5,7 @@
       "apiVersion": "agentprofiles.io/v1",
       "kind": "AgentProfile",
       "metadata": {
-        "namespace": "openclaw",
+        "namespace": "acme",
         "name": "base"
       },
       "spec": {
@@ -16,30 +16,16 @@
       "apiVersion": "agentprofiles.io/v1",
       "kind": "AgentProfile",
       "metadata": {
-        "namespace": "openclaw",
-        "name": "small"
+        "namespace": "acme",
+        "name": "compact"
       },
-      "extends": "openclaw/base",
+      "extends": "acme/base",
       "spec": {
         "common": {
-          "contextSerialization": "lean"
+          "thinkingLevel": "low"
         },
-        "openclaw.ai": {
-          "toolProfile": "lean"
-        }
-      }
-    },
-    {
-      "apiVersion": "agentprofiles.io/v1",
-      "kind": "AgentProfile",
-      "metadata": {
-        "namespace": "openclaw",
-        "name": "small-default"
-      },
-      "extends": "openclaw/small",
-      "spec": {
-        "common": {
-          "contextSerialization": "default"
+        "example.com": {
+          "mode": "compact"
         }
       }
     }
@@ -49,13 +35,13 @@
       "selector": {
         "modelSizeClass": "tiny"
       },
-      "profileId": "openclaw/small"
+      "profileId": "acme/compact"
     },
     {
       "selector": {
         "modelSizeClass": "small"
       },
-      "profileId": "openclaw/small"
+      "profileId": "acme/compact"
     }
   ]
 }

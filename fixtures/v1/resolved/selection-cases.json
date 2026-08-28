@@ -4,7 +4,7 @@
     "identity": {
       "modelSizeClass": "small"
     },
-    "expectedProfileId": "openclaw/small",
+    "expectedProfileId": "acme/compact",
     "expectedSource": "model-size"
   },
   {
@@ -12,7 +12,7 @@
     "identity": {
       "modelSizeClass": null
     },
-    "expectedProfileId": "openclaw/base",
+    "expectedProfileId": "acme/base",
     "expectedSource": "fallback"
   }
 ]

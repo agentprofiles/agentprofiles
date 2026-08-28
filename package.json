@@ -1,8 +1,7 @@
 {
   "name": "agentprofiles",
-  "version": "0.0.0",
+  "version": "0.1.0",
   "description": "Reference TypeScript parser and validator for Agent Profiles.",
-  "private": true,
   "license": "MIT",
   "repository": {
     "type": "git",
@@ -29,6 +28,9 @@
     "dist",
     "schemas"
   ],
+  "publishConfig": {
+    "access": "public"
+  },
   "scripts": {
     "build": "npm run build:library && npm run build:docs",
     "build:docs": "vitepress build docs",

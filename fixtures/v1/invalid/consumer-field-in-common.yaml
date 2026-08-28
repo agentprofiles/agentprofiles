@@ -2,8 +2,7 @@ apiVersion: agentprofiles.io/v1
 kind: AgentProfile
 metadata:
   namespace: acme
-  name: invalid-settings
+  name: consumer-field-in-common
 spec:
-  common: {}
-  settings:
-    responseStyle: friendly
+  common:
+    runtimeMode: compact

@@ -26,7 +26,7 @@ request details, cache controls, and server tuning.
 apiVersion: agentprofiles.io/v1
 kind: AgentProfile
 metadata:
-  namespace: openclaw
+  namespace: acme
   name: acme-1-30b
 spec:
   common:
@@ -34,8 +34,8 @@ spec:
       file:
         path: ./prompts/acme-1-30b.md
     thinkingLevel: high
-  openclaw.ai:
-    toolProfile: lean
+  example.com:
+    mode: compact
 ```
 
 After a user chooses a model, the harness resolves which model it is going to
@@ -48,9 +48,9 @@ download mechanism.
 The profile tells the harness how to run the agent with that model.
 
 Profiles can describe shared behavior that many harnesses may understand, and
-they can also include domain-named sections for harness-specific behavior. For
-example, `spec.common` can hold portable fields, while `spec.openclaw.ai` can
-hold OpenClaw-owned behavior.
+they can also include domain-named sections for harness-specific behavior.
+`spec.common` holds portable fields. A domain-named section holds opaque data
+owned by the corresponding consumer.
 
 ## Why Agent Profiles?
 
@@ -81,13 +81,14 @@ The runtime flow is explicit:
 ## Profile shape
 
 All behavior fields live under `spec`. The `common` section is the
-harness-agnostic part. Domain-named sections such as `openclaw.ai` are owned by
-the corresponding harness or project and can grow independently without changing
-the common schema.
+harness-agnostic part. Domain-named sections are opaque objects owned by the
+corresponding harness or project and can grow without changing the common
+schema. The core checks the section shape but does not define or validate its
+fields.
 
-The phase-one common fields are `systemPrompt` and `thinkingLevel`. Projects can
-add their own fields under their own domain-named section. For example, OpenClaw
-can use `spec.openclaw.ai.toolProfile` for its own tool behavior.
+The phase-one common fields are `systemPrompt` and `thinkingLevel`. Consumers
+can add their own fields under a domain-named section and remain responsible for
+validation, defaults, and inheritance.
 
 `thinkingLevel` uses the portable Pi level set: `off`, `minimal`, `low`,
 `medium`, `high`, and `xhigh`.
@@ -140,10 +141,6 @@ Other language implementations can be added when real consumers need them.
   <a class="profile-card" href="/specification">
     <strong>Specification</strong>
     <span>Read the v1 profile pack and resource format.</span>
-  </a>
-  <a class="profile-card" href="https://github.com/openclaw/rfcs/pull/18">
-    <strong>RFC discussion</strong>
-    <span>Track the active design discussion and proposed implementation phases.</span>
   </a>
   <a class="profile-card" href="https://github.com/agentprofiles/agentprofiles">
     <strong>Repository</strong>

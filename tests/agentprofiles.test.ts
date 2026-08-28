@@ -35,7 +35,7 @@ describe("Agent Profile YAML", () => {
   }
 
   it("rejects multiple YAML documents", () => {
-    const profile = readFixture("valid/small.yaml");
+    const profile = readFixture("valid/domain-extension.yaml");
     expect(() => parseAgentProfileYaml(`${profile}\n---\n${profile}`)).toThrow(
       "Expected exactly one YAML document",
     );
@@ -46,7 +46,7 @@ describe("Agent Profile YAML", () => {
 apiVersion: agentprofiles.io/v1
 kind: AgentProfile
 metadata: &identity
-  namespace: openclaw
+  namespace: acme
   name: anchored
 spec:
   common: {}
@@ -62,7 +62,7 @@ apiVersion: agentprofiles.io/v1
 apiVersion: agentprofiles.io/v1
 kind: AgentProfile
 metadata:
-  namespace: openclaw
+  namespace: acme
   name: duplicate
 spec:
   common: {}
@@ -91,19 +91,30 @@ describe("schema validation", () => {
     const profile = validateAgentProfile({
       apiVersion: "agentprofiles.io/v1",
       kind: "AgentProfile",
-      metadata: { namespace: "openclaw", name: "base" },
+      metadata: { namespace: "acme", name: "base" },
       spec: { common: {} },
     });
     expect(profile.metadata.name).toBe("base");
   });
 
-  it("accepts explicit default context serialization as an inheritance reset", () => {
+  it("rejects consumer-owned fields under spec.common", () => {
+    expect(() =>
+      parseAgentProfileYaml(
+        readFixture("invalid/consumer-field-in-common.yaml"),
+      ),
+    ).toThrow(AgentProfilesError);
+  });
+
+  it("preserves opaque domain sections without interpreting consumer fields", () => {
     const profile = parseAgentProfileYaml(
-      readFixture("valid/context-serialization-default.yaml"),
+      readFixture("valid/domain-extension.yaml"),
     );
 
-    expect(profile.extends).toBe("openclaw/small");
-    expect(profile.spec.common.contextSerialization).toBe("default");
+    expect(profile.extends).toBe("acme/base");
+    expect(profile.spec["example.com"]).toEqual({
+      mode: "compact",
+      options: { preserveTools: true },
+    });
   });
 
   it("reports profile validation issues", () => {
@@ -142,7 +153,7 @@ describe("schema validation", () => {
             canonicalModelId: "acme/model",
             modelSizeClass: "small",
           },
-          profileId: "openclaw/small",
+          profileId: "acme/compact",
         },
       ],
     };

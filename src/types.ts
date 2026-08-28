@@ -1,25 +1,17 @@
 export type AgentProfileThinkingLevel =
   "off" | "minimal" | "low" | "medium" | "high" | "xhigh";
 
-export type AgentProfileContextSerialization = "default" | "lean";
-
 export type AgentProfileSystemPrompt =
   Readonly<{ text: string }> | Readonly<{ file: Readonly<{ path: string }> }>;
 
 export type AgentProfileCommon = Readonly<{
   systemPrompt?: AgentProfileSystemPrompt;
   thinkingLevel?: AgentProfileThinkingLevel;
-  contextSerialization?: AgentProfileContextSerialization;
-}>;
-
-export type OpenClawAgentProfileSpec = Readonly<{
-  toolProfile?: "lean";
 }>;
 
 export type AgentProfileSpec = Readonly<
   {
     common: AgentProfileCommon;
-    "openclaw.ai"?: OpenClawAgentProfileSpec;
   } & Record<string, unknown>
 >;
 

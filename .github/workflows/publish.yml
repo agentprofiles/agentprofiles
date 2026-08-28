@@ -1,0 +1,128 @@
+name: Publish npm package
+
+on:
+  release:
+    types: [published]
+
+concurrency:
+  group: publish-${{ github.event.release.tag_name }}
+  cancel-in-progress: false
+
+permissions:
+  contents: read
+
+jobs:
+  publish:
+    if: ${{ !github.event.release.draft && !github.event.release.prerelease }}
+    runs-on: ubuntu-24.04
+    permissions:
+      contents: read
+      id-token: write
+    steps:
+      - name: Checkout release
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.release.tag_name }}
+          fetch-depth: 0
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: npm
+
+      - name: Update npm
+        run: npm install --global npm@latest
+
+      - name: Validate release
+        env:
+          DEFAULT_BRANCH: ${{ github.event.repository.default_branch }}
+          RELEASE_TAG: ${{ github.event.release.tag_name }}
+        run: |
+          PACKAGE_NAME="$(node -p "require('./package.json').name")"
+          PACKAGE_VERSION="$(node -p "require('./package.json').version")"
+          EXPECTED_TAG="v${PACKAGE_VERSION}"
+
+          if [ "$RELEASE_TAG" != "$EXPECTED_TAG" ]; then
+            echo "Release tag $RELEASE_TAG does not match package version $PACKAGE_VERSION."
+            exit 1
+          fi
+
+          git fetch origin "$DEFAULT_BRANCH"
+          if ! git merge-base --is-ancestor "$GITHUB_SHA" "origin/$DEFAULT_BRANCH"; then
+            echo "Release commit is not on $DEFAULT_BRANCH."
+            exit 1
+          fi
+
+          if npm view "${PACKAGE_NAME}@${PACKAGE_VERSION}" version >/dev/null 2>&1; then
+            echo "${PACKAGE_NAME}@${PACKAGE_VERSION} is already published."
+            exit 1
+          fi
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Install the Rollup binary for the runner architecture
+        run: |
+          ROLLUP_VERSION="$(node -p "require('rollup/package.json').version")"
+          npm install --no-save --package-lock=false "@rollup/rollup-linux-x64-gnu@$ROLLUP_VERSION"
+
+      - name: Check package
+        run: npm run check
+
+      - name: Run repository standards
+        run: npm run slophammer
+
+      - name: Test packed package
+        run: |
+          PACK_DIR="$(mktemp -d)"
+          SMOKE_DIR="$(mktemp -d)"
+          npm pack --pack-destination "$PACK_DIR"
+          cd "$SMOKE_DIR"
+          npm init --yes >/dev/null
+          npm install --ignore-scripts --no-audit --no-fund "$PACK_DIR"/*.tgz
+          node --input-type=module <<'NODE'
+          import { parseAgentProfileYaml } from "agentprofiles";
+
+          const profile = parseAgentProfileYaml(`
+          apiVersion: agentprofiles.io/v1
+          kind: AgentProfile
+          metadata:
+            namespace: agentprofiles
+            name: smoke
+          spec:
+            common:
+              thinkingLevel: low
+            example.com:
+              mode: compact
+          `);
+
+          const extension = profile.spec["example.com"];
+          if (
+            profile.spec.common.thinkingLevel !== "low" ||
+            typeof extension !== "object" ||
+            extension === null ||
+            extension.mode !== "compact"
+          ) {
+            throw new Error("Packed package smoke test returned an unexpected profile");
+          }
+          NODE
+
+      - name: Publish package
+        run: npm publish --access public --provenance
+
+      - name: Verify registry publication
+        run: |
+          PACKAGE_NAME="$(node -p "require('./package.json').name")"
+          PACKAGE_VERSION="$(node -p "require('./package.json').version")"
+
+          for attempt in 1 2 3 4 5 6; do
+            if [ "$(npm view "${PACKAGE_NAME}@${PACKAGE_VERSION}" version 2>/dev/null)" = "$PACKAGE_VERSION" ]; then
+              exit 0
+            fi
+            echo "Registry has not returned ${PACKAGE_NAME}@${PACKAGE_VERSION}; attempt ${attempt}/6."
+            sleep 10
+          done
+
+          echo "Published package was not visible in the registry."
+          exit 1

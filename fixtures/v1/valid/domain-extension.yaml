@@ -1,0 +1,13 @@
+apiVersion: agentprofiles.io/v1
+kind: AgentProfile
+metadata:
+  namespace: acme
+  name: compact
+extends: acme/base
+spec:
+  common:
+    thinkingLevel: low
+  example.com:
+    mode: compact
+    options:
+      preserveTools: true
